@@ -30,10 +30,11 @@ ISoundEngine* soundEngine = createIrrKlangDevice();
 // Collision handling
 // AABB (Axis-Aligned Bounding Box) structure
 struct AABB {
-	glm::vec3 min;  // Minimum corner (x, y, z)
-	glm::vec3 max;  // Maximum corner (x, y, z)
+	glm::vec3 min;
+	glm::vec3 max;
 };
 
+// Letters
 struct Character {
 	unsigned int TextureID; // ID handle of the glyph texture
 	glm::ivec2 Size; // Size of glyph
@@ -118,8 +119,8 @@ float lastFrame = 0.0f;
 float randomX = 0;
 float randomY = 0;
 
-const float vibrationDuration = 0.9f; // Durata della vibrazione in secondi
-const float vibrationIntensity = 0.2f; // Intensit‡ dello spostamento
+const float vibrationDuration = 0.9f;
+const float vibrationIntensity = 0.2f;
 const float powerupDuration = 10.0f;
 float powerupStartTime = 0.0f;
 int collectedPowerupId = -1;
@@ -186,7 +187,7 @@ unsigned int laserIndices[] = {
 	2, 3, 0   // Secondo triangolo
 };
 
-// bad alien structures
+// Bad alien structures
 glm::mat4 modelAlienStructure = glm::mat4(1.0f);
 glm::vec3 alienPosition = { 0.0f, 1.10f, 0.f };
 
@@ -231,8 +232,8 @@ public:
 	void Draw(Shader& shader) {
 		unsigned int diffuseNr = 1;
 		unsigned int specularNr = 1;
-		shader.setVec4("diffuseColor", diffuseColor);  // Imposta il colore diffuso nello shader
-		shader.setBool("useTexture", !textures.empty()); // Imposta se usare o meno le texture
+		shader.setVec4("diffuseColor", diffuseColor);
+		shader.setBool("useTexture", !textures.empty());
 
 		for (unsigned int i = 0; i < textures.size(); i++) {
 			glActiveTexture(GL_TEXTURE0 + i);
@@ -285,7 +286,6 @@ public:
 		loadModel(path);
 	}
 
-	// Check if the model was loaded successfully
 	bool IsLoaded() const {
 		return isLoaded;
 	}
@@ -302,7 +302,7 @@ public:
 private:
 	std::vector<Mesh> meshes;
 	std::string directory;
-	bool isLoaded; // Flag to indicate if the model was loaded successfully
+	bool isLoaded;
 
 	void loadModel(const std::string& path) {
 		Assimp::Importer importer;
@@ -317,7 +317,7 @@ private:
 
 		directory = path.substr(0, path.find_last_of('/'));
 		processNode(scene->mRootNode, scene);
-		isLoaded = true; // Mark the model as successfully loaded
+		isLoaded = true;
 	}
 
 	void processNode(aiNode* node, const aiScene* scene) {
@@ -368,27 +368,25 @@ private:
 				indices.push_back(face.mIndices[j]);
 		}
 
-		glm::vec4 diffuseColor(1.0f);  // Default to white
+		glm::vec4 diffuseColor(1.0f);
+
 		// Load material
 		if (mesh->mMaterialIndex >= 0) {
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-			// Load diffuse textures
 			std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 			textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-			// Load specular textures
 			std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 			textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-			// Load diffuse color
 			aiColor4D color;
 			if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_DIFFUSE, color)) {
 				diffuseColor = glm::vec4(color.r, color.g, color.b, color.a);
 			}
 		}
 
-		return Mesh(vertices, indices, textures, diffuseColor); // Pass diffuse color as well
+		return Mesh(vertices, indices, textures, diffuseColor);
 	}
 
 	std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::string& typeName) const {
@@ -432,10 +430,9 @@ int main()
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	// glfwSetCursorPosCallback(window, mouse_callback); // for moving the view with the mouse
 	glfwSetScrollCallback(window, scroll_callback);
 
-	// tell GLFW to capture our mouse
+	// Capture our mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 	// glad: load all OpenGL function pointers
@@ -450,73 +447,75 @@ int main()
 	// -----------------------------
 	glEnable(GL_DEPTH_TEST);
 
-	// Now that the OpenGL context is active, create the shader object
-	if (fileExists("../../OpenGLApp/shader.vs")) {
-		ourShader = new Shader("../../OpenGLApp/shader.vs", "../../OpenGLApp/shader.frag");
+	// Create the shader object based on their paths
+	if (fileExists("shaders/shader.vs")) {
+		ourShader = new Shader("shaders/shader.vs", "shaders/shader.frag");
+		cout << "File trovato\n";
 	}
 	else {
-		ourShader = new Shader("../../OpenGLApp/OpenGLApp/shader.vs", "../../OpenGLApp/OpenGLApp/shader.frag");
+		ourShader = new Shader("../../OpenGLApp/shader.vs", "../../OpenGLApp/shader.frag");
 	}
 
 	Shader shader("", "");
-	if (fileExists("../../OpenGLApp/text.vs")) {
-		shader = Shader("../../OpenGLApp/text.vs", "../../OpenGLApp/text.frag");
+	if (fileExists("shaders/text.vs")) {
+		shader = Shader("shaders/text.vs", "shaders/text.frag");
 	}
 	else {
-		shader = Shader("../../OpenGLApp/OpenGLApp/text.vs", "../../OpenGLApp/OpenGLApp/text.frag");
+		shader = Shader("../../OpenGLApp/text.vs", "../../OpenGLApp/text.frag");
 	}
 	
-
+	// Define objects models
+	// -----------------------------
 	Model croissantModel = LoadModelWithFallback(
-		"../../OpenGLApp/objects/croissant.obj",
-		"objects/croissant.obj"
+		"objects/croissant.obj",
+		"../../OpenGLApp/objects/croissant.obj"
 	);
 	Model plateModel = LoadModelWithFallback(
-		"../../OpenGLApp/objects/sgorbio.obj",
-		"objects/sgorbio.obj"
+		"objects/sgorbio.obj",
+		"../../OpenGLApp/objects/sgorbio.obj"
 	);
 	Model cupModel = LoadModelWithFallback(
-		"../../OpenGLApp/objects/togocup.obj",
-		"objects/togocup.obj"
+		"objects/togocup.obj",
+		"../../OpenGLApp/objects/togocup.obj"
 	);
 	Model gusModel = LoadModelWithFallback(
-		"../../OpenGLApp/objects/gus2.obj",
-		"objects/gus2.obj"
+		"objects/gus2.obj",
+		"../../OpenGLApp/objects/gus2.obj"
 	);
 	Model muffinModel = LoadModelWithFallback(
-		"../../OpenGLApp/objects/muffin2.obj",
-		"objects/muffin2.obj"
+		"objects/muffin2.obj",
+		"../../OpenGLApp/objects/muffin2.obj"
 	);
 	Model alienModel = LoadModelWithFallback(
-		"../../OpenGLApp/objects/ufo.obj",
-		"objects/ufo.obj"
+		"objects/ufo.obj",
+		"../../OpenGLApp/objects/ufo.obj"
 	);
 	Model laserModel = LoadModelWithFallback(
-		"../../OpenGLApp/OpenGLApp/objects/laser.obj",
-		"objects/laser.obj"
+		"objects/laser.obj",
+		"../../OpenGLApp/OpenGLApp/objects/laser.obj"
 	);
 	Model devilModel = LoadModelWithFallback(
-		"../../OpenGLApp/OpenGLApp/objects/devil.obj",
-		"objects/devil.obj"
+		"objects/devil.obj",
+		"../../OpenGLApp/OpenGLApp/objects/devil.obj"
 	);
 	Model carrotModel = LoadModelWithFallback(
-		"../../OpenGLApp/OpenGLApp/objects/carrot.obj",
-		"objects/carrot.obj"
+		"objects/carrot.obj",
+		"../../OpenGLApp/OpenGLApp/objects/carrot.obj"
 	);
 	Model wineModel = LoadModelWithFallback(
-		"../../OpenGLApp/OpenGLApp/objects/wine.obj",
-		"objects/wine.obj"
+		"objects/wine.obj",
+		"../../OpenGLApp/OpenGLApp/objects/wine.obj"
 	);
 	Model auraPowerupModel = LoadModelWithFallback(
-		"../../OpenGLApp/OpenGLApp/objects/auraPowerup.obj",
-		"objects/auraPowerup.obj"
+		"objects/auraPowerup.obj",
+		"../../OpenGLApp/OpenGLApp/objects/auraPowerup.obj"
 	);
 	Model rocketModel = LoadModelWithFallback(
-		"../../OpenGLApp/OpenGLApp/objects/rocket.obj",
-		"objects/rocket.obj"
+		"objects/rocket.obj",
+		"../../OpenGLApp/OpenGLApp/objects/rocket.obj"
 	);
 
-	// compile and setup the shader
+	// Compile and setup the shader
 	// ----------------------------
 	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH), 0.0f, static_cast<float>(SCR_HEIGHT));
 	shader.use();
@@ -558,7 +557,8 @@ int main()
 		return -1;
 	}
 
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
+	// disable byte-alignment restriction
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	// Load characters
 	for (unsigned char c = 0; c < 128; c++)
@@ -631,8 +631,6 @@ int main()
 	glm::vec3(0.0f, 2.4f, 0.0f)
 	};
 
-	float conveyorSpeed = 0.002f; // Speed of scrolling
-
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
 	float objectsVertices[] = {
@@ -672,7 +670,7 @@ int main()
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	glBindVertexArray(0); // Unbind VAO
+	glBindVertexArray(0);
 
 
 	// PLATE
@@ -695,7 +693,7 @@ int main()
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	glBindVertexArray(0); // Unbind VAO
+	glBindVertexArray(0);
 
 
 	// CUBES
@@ -804,7 +802,7 @@ int main()
 	glBindVertexArray(0);
 
 
-	// load and create textures
+	// Load and create textures
 	// -------------------------
 	GLuint texture0, texture1, texture2, texture3, texture4, texture5, texture6, texture7, texture8, texture9, texture10;
 
@@ -820,7 +818,7 @@ int main()
 	LoadTexture("resources/ufo.jpg", texture9, 0);
 	LoadTexture("resources/rocket.jpg", texture10, 0);
 
-	// tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
+	// Textures for the objects
 	// -------------------------------------------------------------------------------------------
 	ourShader->use();
 	ourShader->setInt("texture0", 0);
@@ -835,13 +833,13 @@ int main()
 	ourShader->setInt("texture9", 9);
 	ourShader->setInt("texture10", 10);
 
-	//----------- BEGIN lightning stuff
+	// Lightning definitions
 	Shader lightingShader("", "");
-	if (fileExists("../../OpenGLApp/shader_light.vs")) {
-		lightingShader = Shader("../../OpenGLApp/shader_light.vs", "../../OpenGLApp/shader_light.frag");
+	if (fileExists("shader/shader_light.vs")) {
+		lightingShader = Shader("shaders/shader_light.vs", "shaders/shader_light.frag");
 	}
 	else {
-		lightingShader = Shader("../../OpenGLApp/OpenGLApp/shader_light.vs", "../../OpenGLApp/OpenGLApp/shader_light.frag");
+		lightingShader = Shader("../../OpenGLApp/shader_light.vs", "../../OpenGLApp/shader_light.frag");
 	}
 
 	float lightVertices[] = {
@@ -906,7 +904,8 @@ int main()
 	lightingShader.setMat4("model", lightModel);
 	lightingShader.setMat4("view", camera.GetViewMatrix());
 	lightingShader.setMat4("projection", projection);
-	//----------- END lightning stuff
+	// -----------------------------
+	// END lightning definitions
 
 	float quitLeft = (SCR_WIDTH / 2.0f - 50) + 15;
 	float quitRight = quitLeft + 65;
@@ -918,7 +917,7 @@ int main()
 	std::string livesCounter = "Lives: " + std::to_string(lives);
 	std::string powerupMessage = "Powerup: " + std::to_string(collectedPowerupId); // Ultimo powerup raccolto
 
-	// Carica i punteggi precedenti
+	// Load scores
 	int lastCollected = 0, lastDropped = 0; float lastTimePlayed = 0.0f; DifficultyLevel usedDifficulty = DifficultyLevel::Easy;
 	int bestCollected = 0, bestDropped = 0; float bestTimePlayed = 0.0f; DifficultyLevel bestUsedDifficulty = DifficultyLevel::Easy;
 
@@ -931,20 +930,22 @@ int main()
 		lastFrame = currentFrame;
 		float vibrationTimer = 0.0f;
 
+		const float conveyorSpeed = 0.2f * deltaTime;
+
 		switch (currentState) {
 		case GameState::MainMenu: {
-			static float pauseMenuEnterTime = 0.0f; // Timer to track when the pause menu was entered
-			static bool firstEnter = true; // Flag to check if it's the first time entering the pause menu
-			static bool escKeyProcessed = false; // Flag to track if ESC key has been processed
-
+			// Timer to track when the pause menu was entered
+			static float pauseMenuEnterTime = 0.0f;
+			static bool firstEnter = true;
+			static bool escKeyProcessed = false;
 			if (firstEnter) {
-				pauseMenuEnterTime = static_cast<float>(glfwGetTime()); // Record the time when the pause menu is entered
+				pauseMenuEnterTime = static_cast<float>(glfwGetTime());
 				firstEnter = false;
-				escKeyProcessed = false; // Reset the ESC key processing flag
+				escKeyProcessed = false;
 			}
 
 			processInput(window, 0);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Pulisce il buffer
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
 			if (showGuide) {
@@ -958,7 +959,7 @@ int main()
 			float mouseX = xpos * (static_cast<float>(SCR_WIDTH) / windowWidth);
 			float mouseY = (windowHeight - ypos) * (static_cast<float>(SCR_HEIGHT) / windowHeight);
 
-			// Definisci i bounding box
+			// Define bounding box
 			float easyLeft = SCR_WIDTH / 2.0f - 180;
 			float easyRight = easyLeft + 50;
 			float easyTop = (SCR_HEIGHT / 2.0f) + 30;
@@ -981,13 +982,13 @@ int main()
 
 			float guideLeft = (SCR_WIDTH / 2.0f - 60) - 320;
 			float guideRight = guideLeft + 165;
-			float guideTop = (SCR_HEIGHT / 2.0f - 60 - 30) + 10 - 190;
-			float guideBottom = (SCR_HEIGHT / 2.0f - 60) + 15 - 190;
+			float guideTop = (SCR_HEIGHT / 2.0f - 60 - 30) - 180;
+			float guideBottom = (SCR_HEIGHT / 2.0f - 60) - 175;
 
-			quitLeft = (SCR_WIDTH / 2.0f - 50) + 15 - 20; // Increase width by 40 (20 on each side)
-			quitRight = quitLeft + 62; // Increase width by 40
-			quitTop = (SCR_HEIGHT / 2.0f - 100 - 30) - 20 + 15; // Increase height by 20 (10 on each side)
-			quitBottom = SCR_HEIGHT / 2.0f - 100; // Increase height by 20
+			quitLeft = (SCR_WIDTH / 2.0f - 50) + 15 - 20;
+			quitRight = quitLeft + 62;
+			quitTop = (SCR_HEIGHT / 2.0f - 100 - 30) - 5;
+			quitBottom = SCR_HEIGHT / 2.0f - 100;
 
 			loadScores(lastCollected, lastDropped, lastTimePlayed, bestCollected, bestDropped, bestTimePlayed);
 
@@ -995,13 +996,12 @@ int main()
 			std::string lastRunDropped = "Oggetti caduti: " + std::to_string(lastDropped);
 			std::string lastRunTime = "Tempo giocato: " + std::to_string(static_cast<int>(std::round(lastTimePlayed)));
 
-			// Miglior run
 			std::string bestRunCollected = "Miglior run - Raccolti: " + std::to_string(bestCollected);
 			std::string bestRunDropped = "Oggetti caduti: " + std::to_string(bestDropped);
 			std::string bestRunTime = "Tempo giocato: " + std::to_string(static_cast<int>(std::round(bestTimePlayed)));
 
 
-			// Stampa sullo schermo
+			// Print on screen
 			float lineSpacing = 30.0f;
 			renderText(shader, lastRunCollected, SCR_WIDTH / 2.0f - 370, SCR_HEIGHT / 2.0f + 250, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 			renderText(shader, lastRunDropped, SCR_WIDTH / 2.0f - 370, SCR_HEIGHT / 2.0f + 250 - lineSpacing, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
@@ -1014,7 +1014,7 @@ int main()
 			renderText(shader, "Welcome!", SCR_WIDTH / 2.0f - 100, SCR_HEIGHT / 2.0f + 130, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 			renderText(shader, "Choose difficulty:", SCR_WIDTH / 2.0f - 130, SCR_HEIGHT / 2.0f + 50, 0.7f, glm::vec3(1.0f, 1.0f, 1.0f));
 
-			float textOffsetY = -20.0f; // Sposta il testo verso l'alto
+			float textOffsetY = -20.0f;
 			renderText(shader, "Easy", easyLeft, easyTop + textOffsetY, 0.6f, glm::vec3(1.0f, 1.0f, 1.0f));
 			renderText(shader, "Medium", mediumLeft, mediumTop + textOffsetY, 0.6f, glm::vec3(1.0f, 1.0f, 1.0f));
 			renderText(shader, "Hard", hardLeft, hardTop + textOffsetY, 0.6f, glm::vec3(1.0f, 1.0f, 1.0f));
@@ -1032,15 +1032,12 @@ int main()
 			//renderBoundingBox(hardLeft, hardRight, hardTop, hardBottom, glm::vec3(0.0f, 1.0f, 0.0f), *ourShader);
 
 			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-				// Verifica se il mouse Ë all'interno del bounding box di "Start"
 				if (mouseX >= startLeft && mouseX <= startRight && mouseY >= startTop && mouseY <= startBottom) {
 					startGame();
 					//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
 					pastTime = static_cast<float>(glfwGetTime());
 					currentState = GameState::Game;
 				}
-				// Verifica se il mouse Ë all'interno del bounding box di "Quit"
 				if (mouseX >= quitLeft && mouseX <= quitRight && mouseY >= quitTop && mouseY <= quitBottom) {
 					glfwSetWindowShouldClose(window, true);
 				}
@@ -1064,21 +1061,21 @@ int main()
 			}
 
 			// Block ESC input for the first 0.5 seconds to prevent flickering
-			float currentTime = glfwGetTime(); // Ottieni il tempo corrente
+			float currentTime = glfwGetTime();
 			ourShader->setFloat("time", currentTime);
 
 			if (currentTime - pauseMenuEnterTime > 0.5f) {
 				if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-					if (!escKeyProcessed) { // Only process ESC if it hasn't been processed yet
+					if (!escKeyProcessed) {
 						//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 						pastTime = static_cast<float>(glfwGetTime());
 						currentState = GameState::MainMenu;
-						firstEnter = true; // Reset the flag when leaving the pause menu
-						escKeyProcessed = true; // Mark ESC as processed
+						firstEnter = true;
+						escKeyProcessed = true;
 					}
 				}
 				else {
-					escKeyProcessed = false; // Reset the flag when ESC is released
+					escKeyProcessed = false;
 				}
 			}
 			break;
@@ -1086,9 +1083,10 @@ int main()
 
 		case GameState::Game: {
 			if (lives > 0) {
-				static float pauseMenuEnterTime = 0.0f; // Timer to track when the pause menu was entered
-				static bool firstEnter = true; // Flag to check if it's the first time entering the pause menu
-				static bool escKeyProcessed = false; // Flag to track if ESC key has been processed
+				// Timer to track when the pause menu was entered
+				static float pauseMenuEnterTime = 0.0f;
+				static bool firstEnter = true;
+				static bool escKeyProcessed = false;
 
 				float alienLeft = 0;
 				float alienRight = 0;
@@ -1098,16 +1096,16 @@ int main()
 				float height = 30.0f;
 
 				if (firstEnter) {
-					pauseMenuEnterTime = static_cast<float>(glfwGetTime()); // Record the time when the pause menu is entered
+					pauseMenuEnterTime = static_cast<float>(glfwGetTime());
 					firstEnter = false;
-					escKeyProcessed = false; // Reset the ESC key processing flag
+					escKeyProcessed = false;
 				}
-				// input
+
 				processInput(window, 1);
 
 				// render
 				// ------
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear buffer from previous elements
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
 				double xpos, ypos;
@@ -1116,9 +1114,6 @@ int main()
 				// Convert mouse coordinates
 				float mouseX = xpos * (static_cast<float>(SCR_WIDTH) / windowWidth);
 				float mouseY = (windowHeight - ypos) * (static_cast<float>(SCR_HEIGHT) / windowHeight);
-
-				/*glBindVertexArray(lightCubeVAO);
-				glDrawArrays(GL_TRIANGLES, 0, 36);*/
 
 				// Handle continuous cube appearance
 				float currentTime = static_cast<float>(glfwGetTime());
@@ -1138,7 +1133,6 @@ int main()
 					food.position = generateRandomPosition(food);
 					foods.push_back(food);
 
-					//objectsPositions.push_back(generateRandomPosition());
 					std::cout << "Spawned at " << currentTime << " with speed " << cubeSpeed << " with delay " << delay << std::endl;
 					cout << "Game time: " << pastTime << "/n";
 					if (food.type == 5) {
@@ -1146,7 +1140,6 @@ int main()
 						randomX = getRandomNumberX();
 					}
 					if (food.type != 4) numberOfObject++;
-					// update pastTime for delay
 					pastTime = currentTime;
 
 					objectMessage = "Object dropped: " + std::to_string(numberOfObject);
@@ -1182,30 +1175,27 @@ int main()
 				for (unsigned int i = 0; i < foods.size(); i++) {
 					foods[i].position.z = 0.2f;
 					if (foods[i].position.y <= -1.10f) {
-						// Reset or remove objects off-screen
 						continue;
 					}
 
 					// Update position
 					foods[i].position.y -= cubeSpeed * deltaTime;
 
-					// Create AABB for the current object after position update
+					// Create AABB for the current object after position update and plate
 					AABB objectAABB = createAABB(foods[i].position);
-					// Create AABB for the plate (static position)
 					AABB plateAABB = createPlateAABB(platePosition);
 
 					// Check for collision
 					if (checkCollision(objectAABB, plateAABB)) {
-						if (foods[i].type == 4 || foods[i].type == 5) { // Laser e Diavolo non sono collezionabili
+						if (foods[i].type == 4 || foods[i].type == 5) {
 							if (activePowerupId == 0) {
-								foods[i].position.y = -10.0f; // Move off-screen after collision
+								foods[i].position.y = -10.0f;
 
 								livesCounter = "Lives: " + std::to_string(lives);
 							}
 							else {
 								lives--;
-								foods[i].position.y = -10.0f; // Move off-screen after collision
-								//renderLifeBar(lives, *lifeShader, lifeBarVAO);
+								foods[i].position.y = -10.0f;
 								livesCounter = "Lives: " + std::to_string(lives);
 								if (fileExists("../../OpenGLApp/sounds/laser2.wav")) {
 									soundEngine->play2D("../../OpenGLApp/sounds/laser2.wav", false);
@@ -1227,7 +1217,7 @@ int main()
 								powerupMessage = "Wine!";
 							}
 							numberOfCollisions++;
-							foods[i].position.y = -10.0f; // Move off-screen after collision
+							foods[i].position.y = -10.0f;
 
 							collisionMessage = "Object collected: " + std::to_string(numberOfCollisions);
 							if (fileExists("../../OpenGLApp/sounds/pickup_sound.wav")) {
@@ -1236,12 +1226,10 @@ int main()
 							else if (fileExists("sounds/pickup_sound.wav")) {
 								soundEngine->play2D("sounds/pickup_sound.wav", false);
 							}
-							//soundEngine->play2D("../../OpenGLApp/sounds/laser2.wav", false);
 						}
 					}
 
 					// Render cube
-					//glm::mat4 objModel = glm::mat4(1.0f);
 					glm::mat4 objModel = glm::mat4(1.0f);
 					if (foods[i].type == 0) {
 						float angle = glfwGetTime();
@@ -1249,7 +1237,7 @@ int main()
 						objModel = glm::scale(objModel, glm::vec3(0.2f, 0.2f, 0.2f));
 						objModel = glm::rotate(objModel, angle, glm::vec3(0.0f, 1.0f, 0.0f));
 
-						ourShader->setInt("textureID", 3);	// still show the croissant white
+						ourShader->setInt("textureID", 3);
 						ourShader->setMat4("model", objModel);
 						croissantModel.Draw(*ourShader);
 					}
@@ -1285,11 +1273,10 @@ int main()
 					}
 					else if (foods[i].type == 4) {
 						alienPosition.x = foods[i].position.x;
-						// Imposta la flag per il laser
 						ourShader->setBool("isLaser", true);
-						ourShader->setVec3("laserColor", glm::vec3(1.0f, 0.0f, 0.0f)); // Colore rosso
+						ourShader->setVec3("laserColor", glm::vec3(1.0f, 0.0f, 0.0f)); // Red
 
-						// Renderizza il laser
+						// Render il laser
 						glm::mat4 laserModelStructure = glm::mat4(1.0f);
 						laserModelStructure = glm::translate(laserModelStructure, foods[i].position);
 
@@ -1298,7 +1285,6 @@ int main()
 						glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 						glBindVertexArray(0);
 
-						// Ripristina la flag per gli altri oggetti
 						ourShader->setBool("isLaser", false);
 					}
 					else if (foods[i].type == 5) {
@@ -1309,7 +1295,7 @@ int main()
 						glBindVertexArray(plateVAO);
 						devilModelStructure = glm::translate(devilModelStructure, foods[i].position);
 						devilModelStructure = glm::scale(devilModelStructure, glm::vec3(0.08f, 0.08f, 0.08f));
-						//objModel = glm::rotate(objModel, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+
 						ourShader->setMat4("model", devilModelStructure);
 						ourShader->setInt("textureID", 7);
 						devilModel.Draw(*ourShader);
@@ -1320,9 +1306,6 @@ int main()
 						alienRight = (foods[i].position.x + width) + randomX;
 						alienTop = (foods[i].position.y + height) + randomY;
 						alienBottom = (foods[i].position.y - height) + randomY;
-
-						//std::cout << "Rettangolo centrato in (" << foods[i].position.x << ", " << foods[i].position.y << ")/n";
-
 						renderBoundingBox(alienLeft, alienRight, alienTop, alienBottom, glm::vec3(1.0f, 0.0f, 0.0f), *ourShader);
 
 						if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
@@ -1330,9 +1313,8 @@ int main()
 							{
 								cout << "Preso!" << "/n";
 								numberOfCollisions++;
-								foods[i].position.y = -10.0f; // Move off-screen after collision
+								foods[i].position.y = -10.0f;
 								collisionMessage = "Object collected: " + std::to_string(numberOfCollisions);
-								//soundEngine->play2D("../../OpenGLApp/sounds/pickup_sound.wav", false);
 
 								if (fileExists("../../OpenGLApp/sounds/pickup_sound.wav")) {
 									soundEngine->play2D("../../OpenGLApp/sounds/pickup_sound.wav", false);
@@ -1340,7 +1322,6 @@ int main()
 								else if (fileExists("sounds/pickup_sound.wav")) {
 									soundEngine->play2D("sounds/pickup_sound.wav", false);
 								}
-								//soundEngine->play2D("../../OpenGLApp/sounds/laser2.wav", false);
 							}
 						}
 					}
@@ -1367,26 +1348,23 @@ int main()
 				}
 
 				for (unsigned int i = 0; i < flyingObjects.size(); i++) {
-					// Aggiorna la posizione del razzo
+					// Update rocket position
 					flyingObjects[i].position.y += flyingObjects[i].speedY * deltaTime;
 					flyingObjects[i].position.z = 0.2f;
 
-					// Crea AABB per il razzo
+					// Create rocket AABB
 					AABB rocketAABB = createRocketAABB(flyingObjects[i].position, flyingObjects[i].size);
 
-					// Itera attraverso foods per trovare il laser
 					for (unsigned int j = 0; j < foods.size(); j++) {
-						if (foods[j].type == 4) { // Se Ë il laser
+						if (foods[j].type == 4) { // Se √® il laser
 
-							// Crea AABB per il laser
+							// Crea laser AABB
 							AABB laserAABB = createAABB(foods[j].position);
 
-							// Verifica collisione
 							if (checkCollision(rocketAABB, laserAABB) && !flyingObjects[i].collided) {
-								// Collisione rilevata
 								std::cout << "Collisione tra razzo e laser!" << std::endl;
 
-								foods[j].type = -1; // Disattiva il laser
+								foods[j].type = -1; // Deactivate il laser
 								flyingObjects[i].collided = true;
 								flyingObjects[i].position = glm::vec3{ -10, -10, -10 };
 								break;
@@ -1394,7 +1372,7 @@ int main()
 						}
 					}
 
-					// Renderizza il razzo
+					// Render rocket
 					if (!flyingObjects[i].collided) {
 						glm::mat4 objModel = glm::mat4(1.0f);
 						float angle = glfwGetTime();
@@ -1465,11 +1443,6 @@ int main()
 				// Render conveyor belt
 				ourShader->use();
 				glBindVertexArray(conveyorVAO);
-				// Apply transformations if needed
-				/*glm::mat4 model = glm::translate(glm::mat4(1.0f), conveyorBeltPosition);
-				ourShader->setMat4("model", model);
-				ourShader->setInt("textureID", 3);
-				glDrawArrays(GL_TRIANGLES, 0, 6);*/
 				glm::mat4 model = glm::mat4(1.0f);
 				for (int i = 0; i < 2; i++) {
 					conveyorBeltPositions[i].y -= conveyorSpeed;
@@ -1489,13 +1462,9 @@ int main()
 
 				// light properties
 				glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
-				//pulsing light (?)
-				/*lightColor.x = static_cast<float>(sin(glfwGetTime() * 2.0));
-				lightColor.y = static_cast<float>(sin(glfwGetTime() * 0.7));
-				lightColor.z = static_cast<float>(sin(glfwGetTime() * 1.3));*/
 
-				glm::vec3 diffuseColor = lightColor * glm::vec3(1.0f); // 80% influence for diffuse
-				glm::vec3 ambientColor = diffuseColor * glm::vec3(1.0f); // 40% ambient influence
+				glm::vec3 diffuseColor = lightColor * glm::vec3(1.0f);
+				glm::vec3 ambientColor = diffuseColor * glm::vec3(1.0f);
 
 				ourShader->setVec3("light.color", lightColor);
 				ourShader->setVec3("light.ambient", ambientColor);
@@ -1505,7 +1474,7 @@ int main()
 				// material properties
 				ourShader->setVec3("material.ambient", 1.0f, 1.0f, 1.0f);
 				ourShader->setVec3("material.diffuse", 1.0f, 1.0f, 1.0f);
-				ourShader->setVec3("material.specular", 0.0f, 0.0f, 0.0f); // specular lighting doesn't have full effect on this object's material
+				ourShader->setVec3("material.specular", 0.0f, 0.0f, 0.0f);
 				ourShader->setFloat("material.shininess", 2.0f);
 
 				// Render plate
@@ -1518,7 +1487,7 @@ int main()
 					}
 					else {
 						platePosition.x += offsetVib / 2;
-						isVibrating = false; // Termina la vibrazione
+						isVibrating = false;
 					}
 				}
 				glActiveTexture(GL_TEXTURE0);
@@ -1558,7 +1527,7 @@ int main()
 				glDrawArrays(GL_TRIANGLES, 0, 6);
 
 				// Render text
-				glUseProgram(shader.ID); // Use text shader
+				glUseProgram(shader.ID); 
 				renderText(shader, objectMessage, 10.0f, 550.0f, 0.6f, glm::vec3(1.0f, 1.0f, 1.0f));
 				renderText(shader, collisionMessage, 10.0f, 480.0f, 0.6f, glm::vec3(1.0f, 1.0f, 1.0f));
 				renderText(shader, livesCounter, 10.0f, 410.0f, 0.6f, glm::vec3(1.0f, 1.0f, 1.0f));
@@ -1573,16 +1542,15 @@ int main()
 				float currentEscTime = static_cast<float>(glfwGetTime());
 				if (currentEscTime - pauseMenuEnterTime > 0.5f) {
 					if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-						if (!escKeyProcessed) { // Only process ESC if it hasn't been processed yet
-							//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+						if (!escKeyProcessed) {
 							pastTime = static_cast<float>(glfwGetTime());
 							currentState = GameState::PauseMenu;
-							firstEnter = true; // Reset the flag when leaving the pause menu
-							escKeyProcessed = true; // Mark ESC as processed
+							firstEnter = true;
+							escKeyProcessed = true;
 						}
 					}
 					else {
-						escKeyProcessed = false; // Reset the flag when ESC is released
+						escKeyProcessed = false;
 					}
 				}
 
@@ -1593,8 +1561,7 @@ int main()
 
 		case GameState::GameOverMenu: {
 			processInput(window, 2);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear buffer from previous elements
-			//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			double xpos, ypos;
 			glfwGetCursorPos(window, &xpos, &ypos);
@@ -1603,7 +1570,7 @@ int main()
 			float mouseX = xpos * (static_cast<float>(SCR_WIDTH) / windowWidth);
 			float mouseY = (windowHeight - ypos) * (static_cast<float>(SCR_HEIGHT) / windowHeight);
 
-			// Definisci i bounding box
+			// Define bounding box
 			float restartLeft = SCR_WIDTH / 2.0f - 60;
 			float restartRight = restartLeft + 110;
 			float restartTop = SCR_HEIGHT / 2.0f - 60 - 30;
@@ -1620,23 +1587,14 @@ int main()
 			
 			saveScore(numberOfCollisions, totalObjDropped, pastTime);
 
-			// Render bounding boxes for "Restart" and "Quit" buttons
-			//renderBoundingBox(restartLeft, restartRight, restartTop, restartBottom, glm::vec3(0.0f, 1.0f, 0.0f), *ourShader); // Green
-			//renderBoundingBox(quitLeft, quitRight, quitTop, quitBottom, glm::vec3(1.0f, 0.0f, 0.0f), *ourShader); // Red
-
 			// Handle mouse input for "Restart" and "Quit"
 			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-
-				// Verifica se il mouse Ë all'interno del bounding box di "Restart"
 				if (mouseX >= restartLeft && mouseX <= restartRight && mouseY >= restartTop && mouseY <= restartBottom) {
 					startGame();
-					//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
 					pastTime = static_cast<float>(glfwGetTime());
 					currentState = GameState::Game;
 				}
 
-				// Verifica se il mouse Ë all'interno del bounding box di "Quit"
 				if (mouseX >= quitLeft && mouseX <= quitRight && mouseY >= quitTop && mouseY <= quitBottom) {
 					glfwSetWindowShouldClose(window, true);
 				}
@@ -1645,19 +1603,18 @@ int main()
 		}
 
 		case GameState::PauseMenu: {
-			static float pauseMenuEnterTime = 0.0f; // Timer to track when the pause menu was entered
-			static bool firstEnter = true; // Flag to check if it's the first time entering the pause menu
-			static bool escKeyProcessed = false; // Flag to track if ESC key has been processed
-
+			// Timer to track when the pause menu was entered
+			static float pauseMenuEnterTime = 0.0f;
+			static bool firstEnter = true;
+			static bool escKeyProcessed = false;
 			if (firstEnter) {
-				pauseMenuEnterTime = static_cast<float>(glfwGetTime()); // Record the time when the pause menu is entered
+				pauseMenuEnterTime = static_cast<float>(glfwGetTime());
 				firstEnter = false;
-				escKeyProcessed = false; // Reset the ESC key processing flag
+				escKeyProcessed = false;
 			}
 
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear buffer from previous elements
-
-			//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			// Clear buffer from previous elements
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			double xpos, ypos;
 			glfwGetCursorPos(window, &xpos, &ypos);
@@ -1667,13 +1624,13 @@ int main()
 			float mouseY = (windowHeight - ypos) * (static_cast<float>(SCR_HEIGHT) / windowHeight);
 
 			// Define the bounding boxes with consistent spacing
-			float buttonWidth = 200.0f; // Width of the buttons
-			float buttonHeight = 35.0f; // Height of the buttons
-			float buttonSpacing = 20.0f; // Spacing between buttons
+			float buttonWidth = 200.0f;
+			float buttonHeight = 35.0f;
+			float buttonSpacing = 20.0f;
 
 			// Calculate the top-left corner of the first button (Resume)
-			float startX = SCR_WIDTH / 2.0f - buttonWidth / 2.0f; // Center horizontally
-			float startY = SCR_HEIGHT / 2.0f - (buttonHeight * 1.5f + buttonSpacing * 2.0f); // Center vertically
+			float startX = SCR_WIDTH / 2.0f - buttonWidth / 2.0f;
+			float startY = SCR_HEIGHT / 2.0f - (buttonHeight * 1.5f + buttonSpacing * 2.0f);
 
 			// Quit Game button
 			float quitLeft = startX;
@@ -1706,20 +1663,17 @@ int main()
 			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
 				// Check if the mouse is inside the "Resume Game" bounding box
 				if (mouseX >= resumeLeft && mouseX <= resumeRight && mouseY >= resumeTop && mouseY <= resumeBottom) {
-					//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 					pastTime = static_cast<float>(glfwGetTime());
 					currentState = GameState::Game;
-					firstEnter = true; // Reset the flag when leaving the pause menu
+					firstEnter = true;
 				}
 
 				// Check if the mouse is inside the "Restart Game" bounding box
 				if (mouseX >= restartLeft && mouseX <= restartRight && mouseY >= restartTop && mouseY <= restartBottom) {
 					startGame();
-					//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
 					pastTime = static_cast<float>(glfwGetTime());
 					currentState = GameState::Game;
-					firstEnter = true; // Reset the flag when leaving the pause menu
+					firstEnter = true;
 				}
 
 				// Check if the mouse is inside the "Quit" bounding box
@@ -1735,16 +1689,15 @@ int main()
 			float currentTime = static_cast<float>(glfwGetTime());
 			if (currentTime - pauseMenuEnterTime > 0.5f) {
 				if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-					if (!escKeyProcessed) { // Only process ESC if it hasn't been processed yet
-						//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+					if (!escKeyProcessed) {
 						pastTime = static_cast<float>(glfwGetTime());
 						currentState = GameState::Game;
-						firstEnter = true; // Reset the flag when leaving the pause menu
-						escKeyProcessed = true; // Mark ESC as processed
+						firstEnter = true;
+						escKeyProcessed = true;
 					}
 				}
 				else {
-					escKeyProcessed = false; // Reset the flag when ESC is released
+					escKeyProcessed = false;
 				}
 			}
 
@@ -1752,16 +1705,17 @@ int main()
 		}
 
 		case GameState::GuideMenu: {
-			static float pauseMenuEnterTime = 0.0f; // Timer to track when the pause menu was entered
-			static bool firstEnter = true; // Flag to check if it's the first time entering the pause menu
-			static bool escKeyProcessed = false; // Flag to track if ESC key has been processed
+			// Timer to track when the pause menu was entered
+			static float pauseMenuEnterTime = 0.0f;
+			static bool firstEnter = true;
+			static bool escKeyProcessed = false;
 			if (firstEnter) {
-				pauseMenuEnterTime = static_cast<float>(glfwGetTime()); // Record the time when the pause menu is entered
+				pauseMenuEnterTime = static_cast<float>(glfwGetTime());
 				firstEnter = false;
-				escKeyProcessed = false; // Reset the ESC key processing flag
+				escKeyProcessed = false;
 			}
 
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Pulisce il buffer
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 			processInput(window, 4);
 			renderGuidePage(shader, window);
@@ -1770,16 +1724,15 @@ int main()
 			float currentTime = static_cast<float>(glfwGetTime());
 			if (currentTime - pauseMenuEnterTime > 0.5f) {
 				if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-					if (!escKeyProcessed) { // Only process ESC if it hasn't been processed yet
-						//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+					if (!escKeyProcessed) {
 						pastTime = static_cast<float>(glfwGetTime());
 						currentState = GameState::MainMenu;
-						firstEnter = true; // Reset the flag when leaving the pause menu
-						escKeyProcessed = true; // Mark ESC as processed
+						firstEnter = true;
+						escKeyProcessed = true;
 					}
 				}
 				else {
-					escKeyProcessed = false; // Reset the flag when ESC is released
+					escKeyProcessed = false;
 				}
 			}
 			break;
@@ -1795,7 +1748,7 @@ int main()
 	std::cout << "Collisioni: " << numberOfCollisions << std::endl;
 
 
-	// optional: de-allocate all resources once they've outlived their purpose:
+	// De-allocate all resources once they've outlived their purpose:
 	// ------------------------------------------------------------------------
 	glDeleteVertexArrays(1, &conveyorVAO);
 	glDeleteBuffers(1, &conveyorVBO);
@@ -1810,6 +1763,7 @@ int main()
 
 	// glfw: terminate, clearing all previously allocated GLFW resources.
 	// ------------------------------------------------------------------
+
 	// Clean up
 	delete ourShader;
 	glfwTerminate();
@@ -1854,7 +1808,7 @@ unsigned int TextureFromFile(const char* path, const std::string& directory) {
 	return textureID;
 }
 
-// Declare the random number generator outside the function
+// Declare the random number generator
 std::random_device rd;
 std::mt19937 gen(rd());
 glm::vec3 generateRandomPosition(Food food) {
@@ -1872,25 +1826,26 @@ glm::vec3 generateRandomPosition(Food food) {
 	currentIndex = (currentIndex + 1) % 3;
 
 	// offset position for more random position
-	static std::random_device rd_offset; // Seed
-	static std::mt19937 gen(rd_offset()); // Mersenne Twister engine
-	static std::uniform_real_distribution<double> dist(-0.15, 0.15); // Distribution for the range [-0.15, 0.15]
+	static std::random_device rd_offset;
+	static std::mt19937 gen(rd_offset());
+	static std::uniform_real_distribution<double> dist(-0.15, 0.15);
 	float offset = dist(gen);
 
 	if (food.type == 4) {
-		return glm::vec3(randomX + offset, 0.88f, 0.2f); // Fixed y for laser
+		return glm::vec3(randomX + offset, 0.88f, 0.2f);
 	}
 
 	return glm::vec3(randomX + offset, 1.20f, 0.2f);
 }
 
 int generateRandomObject() {
-	static int count = 0;  // Tiene traccia di quante volte la funzione Ë stata chiamata
-	static std::mt19937 rng(std::random_device{}());  // Generatore di numeri casuali
-	static std::uniform_int_distribution<int> dist(0, 6);  // Genera numeri tra 0 e 6
+	static int count = 0;
+	static std::mt19937 rng(std::random_device{}());
+	static std::uniform_int_distribution<int> dist(0, 6);
 
 	count++;
-	if (count % 3 == 0) { // Ogni terzo numero Ë sempre 4
+	// Every 3 numbers generate a laser
+	if (count % 3 == 0) {
 		return 4;
 	}
 	else {
@@ -1909,29 +1864,27 @@ void processInput(GLFWwindow* window, int caller)
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-		if (platePosition.x <= 0.45f) // if plate in border
-			platePosition.x += 0.03f;  // Move plate right
+		if (platePosition.x <= 0.45f)
+			platePosition.x += 1.0f * deltaTime;
 		else {
 			platePosition.x = 0.45f;
-			//soundEngine->play2D("C:/Users/aagar/Documents/InfoGrafica/OpenGLApp  - demos/OpenGLApp/OpenGLApp/hitting_wall.wav", false);
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-		if (platePosition.x >= -0.45f) // if plate in border
-			platePosition.x -= 0.03f;  // Move plate left
+		if (platePosition.x >= -0.45f)
+			platePosition.x -= 1.0f * deltaTime;
 		else {
 			platePosition.x = -0.45f;
-			//soundEngine->play2D("C:/Users/aagar/Documents/InfoGrafica/OpenGLApp  - demos/OpenGLApp/OpenGLApp/hitting_wall.wav", false);
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		if (collectedPowerupId == 0 && !powerupActive) {    // Invincibilit‡
+		if (collectedPowerupId == 0 && !powerupActive) {    // Invincibility
 			activePowerupId = 0;
 			powerupStartTime = static_cast<float>(glfwGetTime());
 			powerupActive = true;
 			std::cout << "Power-up" << collectedPowerupId << "attivato!" << std::endl;
 		}
-		else if (collectedPowerupId == 1 && !powerupActive) {	// Spara razzi
+		else if (collectedPowerupId == 1 && !powerupActive) {	// Rocket launcher
 			activePowerupId = 1;
 			powerupStartTime = static_cast<float>(glfwGetTime());
 			powerupActive = true;
@@ -1948,7 +1901,7 @@ void processInput(GLFWwindow* window, int caller)
 }
 
 // process keys inpunts for all the menus
-// --------------------------------------------------------------------------------------------------------- 
+// ------------------------------------------
 void processMenusKeys(GLFWwindow* window, int caller)
 {
 	if (caller == 0 || caller == 2) {
@@ -1992,7 +1945,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 	}
 
 	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+	float yoffset = lastY - ypos;
 
 	lastX = xpos;
 	lastY = ypos;
@@ -2044,7 +1997,7 @@ bool checkCollision(const AABB& a, const AABB& b) {
 }
 
 void renderText(Shader& s, std::string text, float x, float y, float scale, glm::vec3 color) {
-	// activate corresponding render state	
+	// Activate corresponding render state	
 	s.use();
 	glUniform3f(glGetUniformLocation(s.ID, "textColor"), color.x, color.y, color.z);
 
@@ -2084,8 +2037,7 @@ void renderText(Shader& s, std::string text, float x, float y, float scale, glm:
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		// render quad
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		// now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-		x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+		x += (ch.Advance >> 6) * scale;
 	}
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -2095,7 +2047,7 @@ void renderBoundingBox(float left, float right, float top, float bottom, glm::ve
 	shader.use();
 	shader.setVec3("color", color);
 
-	// Matrici identit‡ per disegno diretto
+	// Matrici identit√† per disegno diretto
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);
 	glm::mat4 projection = glm::ortho(0.0f, (float)SCR_WIDTH, 0.0f, (float)SCR_HEIGHT);
@@ -2123,7 +2075,6 @@ void renderBoundingBox(float left, float right, float top, float bottom, glm::ve
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	// Disegna linea
 	glDrawArrays(GL_LINE_LOOP, 0, 4);
 
 	glBindVertexArray(0);
@@ -2132,8 +2083,8 @@ void renderBoundingBox(float left, float right, float top, float bottom, glm::ve
 	glDeleteBuffers(1, &VBO);
 }
 
+// Game reset/begin
 void startGame() {
-	// Reset del gioco
 	numberOfCollisions = 0;
 	lives = 3;
 	numberOfObject = 1;
@@ -2142,12 +2093,12 @@ void startGame() {
 	if (currentDifficulty == DifficultyLevel::Easy) {
 	}
 	else if (currentDifficulty == DifficultyLevel::Medium) {
-		cubeSpeed *= 1.5f; // Aumenta la velocit‡ del 50%
-		delay *= 0.75f; // Riduce il delay del 25%
+		cubeSpeed *= 1.5f; // Speed up by 50%
+		delay *= 0.75f; // Reduce delay by 25%
 	}
 	else if (currentDifficulty == DifficultyLevel::Hard) {
-		cubeSpeed *= 2.0f; // Raddoppia la velocit‡
-		delay *= 0.5f; // Dimezza il delay
+		cubeSpeed *= 2.0f; // Sped up x2
+		delay *= 0.5f; // Half the delay
 	}
 
 	pastTime = 0.0f;
@@ -2177,14 +2128,14 @@ void startGame() {
 
 int getRandomNumberX() {
 	static std::random_device rd;
-	static std::mt19937 gen(rd());  // Generatore Mersenne Twister
+	static std::mt19937 gen(rd());
 	std::uniform_int_distribution<int> dist(570, 770);
 	return dist(gen);
 }
 
 int getRandomNumberY() {
 	static std::random_device rd;
-	static std::mt19937 gen(rd());  // Generatore Mersenne Twister
+	static std::mt19937 gen(rd());
 	std::uniform_int_distribution<int> dist(30, 570);
 	return dist(gen);
 }
@@ -2201,35 +2152,33 @@ void createFlyingObject() {
 void saveScore(int& collected, int& dropped, float& timePlayed) {
 	json j;
 
-	// Se esiste gi‡ un file JSON, caricalo
+	// Load the JSON
 	std::ifstream file("score.json");
 	if (file.is_open()) {
 		file >> j;
 		file.close();
 	}
 
-	// Salva i dati dell'ultima run
 	j["last_run"]["collected"] = collected;
 	j["last_run"]["dropped"] = dropped;
 	j["last_run"]["time_played"] = timePlayed;
 
-	// Controlla se la run attuale Ë la migliore
+	// Check if best run
 	if (!j.contains("best_run") || collected > j["best_run"]["collected"]) {
 		j["best_run"]["collected"] = collected;
 		j["best_run"]["dropped"] = dropped;
 		j["best_run"]["time_played"] = timePlayed;
 	}
 
-	// Scrivi i dati aggiornati nel file
 	std::ofstream outFile("score.json");
-	outFile << j.dump(4); // Formattazione con indentazione
+	outFile << j.dump(4);
 	outFile.close();
 }
 
 bool loadScores(int& collected, int& dropped, float& timePlayed, int& bestCollected, int& bestDropped, float& bestTimePlayed) {
 	std::ifstream file("score.json");
 	if (!file.is_open()) {
-		return false; // Il file non esiste, non ci sono punteggi da caricare
+		return false;
 	}
 
 	json j;
@@ -2267,7 +2216,6 @@ void renderGuidePage(Shader& shader, GLFWwindow* window) {
 	glm::vec3 titleColor = glm::vec3(1.0f, 1.0f, 0.0f);
 	glm::vec3 textColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
-	// Titoli principali
 	renderText(shader, "GUIDA", startX, startY, 0.7f, titleColor);
 
 	startY -= lineSpacing * 2;
@@ -2284,13 +2232,12 @@ void renderGuidePage(Shader& shader, GLFWwindow* window) {
 
 	startY -= 6 * lineSpacing;
 	renderText(shader, "Oggetti:", startX, startY, 0.6f, titleColor);
-	renderText(shader, "- Laser: sparato dallíalieno. Toglie una vita se colpito", startX + 20, startY - lineSpacing, 0.5f, textColor);
+	renderText(shader, "- Laser: sparato dall‚Äôalieno. Toglie una vita se colpito", startX + 20, startY - lineSpacing, 0.5f, textColor);
 	renderText(shader, "- Demone: toglie una vita se colpito. Evitabile cliccando il box", startX + 20, startY - 2 * lineSpacing, 0.5f, textColor);
 	renderText(shader, "- Carota/Vino: danno poteri speciali", startX + 20, startY - 3 * lineSpacing, 0.5f, textColor);
 	renderText(shader, "- Altri oggetti: collezionabili", startX + 20, startY - 4 * lineSpacing, 0.5f, textColor);
 
 	renderText(shader, "Quit", quitLeft, quitTop, 0.8f, glm::vec3(1.0f, 0.0f, 0.0f));
-	//renderBoundingBox(quitLeft, quitRight, quitTop, quitBottom, glm::vec3(0.0f, 1.0f, 0.0f), *ourShader);
 
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
 		if (mouseX >= quitLeft && mouseX <= quitRight && mouseY >= quitTop && mouseY <= quitBottom) {
@@ -2307,18 +2254,18 @@ void LoadTexture(const char* filename, GLuint& textureID, int textureToCompare) 
 	glBindTexture(GL_TEXTURE_2D, textureID);
 
 	if (textureToCompare == 1) {
-		// Disabilita il wrapping (GL_REPEAT) e usa GL_CLAMP_TO_EDGE
+		// Disable  wrapping (GL_REPEAT) and use GL_CLAMP_TO_EDGE
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-		// Usa il filtraggio GL_NEAREST per evitare interpolazioni
+		// Use filtering GL_NEAREST to avoid interpolations
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		stbi_set_flip_vertically_on_load(GL_TRUE);
 	}
 
-	// Carica l'immagine
+	// Load imange
 	int width, height, nrChannels;
 	unsigned char* data = stbi_load(filename, &width, &height, &nrChannels, 0);
 
@@ -2328,7 +2275,7 @@ void LoadTexture(const char* filename, GLuint& textureID, int textureToCompare) 
 			(nrChannels == 4) ? GL_RGBA : GL_RGB;
 
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D); // Opzionale, se non usi il mipmapping
+		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {
 		std::cout << "Failed to load texture: " << filename << std::endl;

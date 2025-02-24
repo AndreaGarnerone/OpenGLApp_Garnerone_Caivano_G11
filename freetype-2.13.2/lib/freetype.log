@@ -1,0 +1,51 @@
+﻿  autofit.c
+  ftbase.c
+  ftbbox.c
+  ftbdf.c
+  ftbitmap.c
+  ftcid.c
+  ftfstype.c
+  ftgasp.c
+  ftglyph.c
+  ftgxval.c
+  ftinit.c
+  ftmm.c
+  ftotval.c
+  ftpatent.c
+  ftpfr.c
+  ftstroke.c
+  ftsynth.c
+  fttype1.c
+  ftwinfnt.c
+  bdf.c
+  ftcache.c
+  cff.c
+  type1cid.c
+  dlgwrap.c
+  ftgzip.c
+  ftlzw.c
+  pcf.c
+  pfr.c
+  psaux.c
+  pshinter.c
+  psmodule.c
+  raster.c
+  sfnt.c
+  smooth.c
+  sdf.c
+  svg.c
+  truetype.c
+  type1.c
+  type42.c
+  winfnt.c
+  ftdebug.c
+  ftsystem.c
+C:\Users\lab2a\Desktop\IG2023\OpenGLApp-master(ADV)\freetype-2.13.2\src\sfnt\sfdriver.c(1032,36): warning C4244: 'funzione': conversione da '__int64' a 'const unsigned int'. Possibile perdita di dati. (compilazione del file di origine ..\..\..\src\sfnt\sfnt.c)
+C:\Users\lab2a\Desktop\IG2023\OpenGLApp-master(ADV)\freetype-2.13.2\src\sfnt\ttcolr.c(729): warning C4706: assegnazione all'interno di un'espressione condizionale
+C:\Users\lab2a\Desktop\IG2023\OpenGLApp-master(ADV)\freetype-2.13.2\src\sfnt\ttcolr.c(777): warning C4706: assegnazione all'interno di un'espressione condizionale
+C:\Users\lab2a\Desktop\IG2023\OpenGLApp-master(ADV)\freetype-2.13.2\src\sfnt\ttcolr.c(839): warning C4706: assegnazione all'interno di un'espressione condizionale
+C:\Users\lab2a\Desktop\IG2023\OpenGLApp-master(ADV)\freetype-2.13.2\src\type1\t1load.c(1779,64): warning C4244: '=': conversione da '__int64' a 'FT_Int'. Possibile perdita di dati. (compilazione del file di origine ..\..\..\src\type1\type1.c)
+C:\Users\lab2a\Desktop\IG2023\OpenGLApp-master(ADV)\freetype-2.13.2\src\type1\t1load.c(1953,36): warning C4244: '=': conversione da '__int64' a 'FT_Int'. Possibile perdita di dati. (compilazione del file di origine ..\..\..\src\type1\type1.c)
+C:\Users\lab2a\Desktop\IG2023\OpenGLApp-master(ADV)\freetype-2.13.2\src\type42\t42parse.c(878,62): warning C4244: '=': conversione da '__int64' a 'FT_Int'. Possibile perdita di dati. (compilazione del file di origine ..\..\..\src\type42\type42.c)
+     Creazione della libreria ..\..\..\objs\x64\Debug\freetype.lib e dell'oggetto ..\..\..\objs\x64\Debug\freetype.exp
+  freetype.vcxproj -> C:\Users\lab2a\Desktop\IG2023\OpenGLApp-master(ADV)\freetype-2.13.2\objs\x64\Debug\freetype.dll

@@ -1,0 +1,37 @@
+﻿  Main.cpp
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(248,44): warning C4267: 'argomento': conversione da 'size_t' a 'GLsizei'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(595,24): warning C4838: la conversione da 'FT_Pos' a 'unsigned int' richiede una conversione che supporta un minor numero di dati
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(927,22): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(956,17): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(957,17): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1065,22): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1115,18): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1116,18): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1143,33): warning C4244: '=': conversione da 'int' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1144,33): warning C4244: '=': conversione da 'int' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1215,37): warning C4244: '=': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1245,19): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1255,19): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1265,19): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1275,19): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1303,19): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1346,19): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1356,19): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1398,19): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1511,24): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1546,17): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1601,17): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1602,17): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1664,17): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1665,17): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(1876,15): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(2169,28): warning C4244: '=': conversione da 'int' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(2170,28): warning C4244: '=': conversione da 'int' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(2253,15): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\OpenGLApp\Main.cpp(2254,15): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+  Generazione codice in corso...
+  1 of 2376 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    98 functions had inline decision re-evaluated but remain unchanged
+  Generazione codice terminata
+  OpenGLApp.vcxproj -> C:\Users\aagar\Documents\InfoGrafica\OpenGLApp  - demos\OpenGLApp\x64\Release\OpenGLApp.exe
